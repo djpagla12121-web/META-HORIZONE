@@ -1,6 +1,32 @@
-# Protected Python Script
-import marshal, base64, zlib, sys
-if sys.version_info[:2] != (3, 14):
-    print("This script requires Python 3.14")
+cat > run.py <<'PY'
+import os
+import sys
+import importlib.util
+
+BASE = os.path.dirname(os.path.realpath(__file__))
+SO = os.path.join(
+    BASE, "main.cpython-314-aarch64-linux-android.so"
+)
+
+print("[*] Python:", sys.executable)
+print("[*] Module:", SO)
+
+if not os.path.isfile(SO):
+    print("[!] .so file not found")
     sys.exit(1)
-exec(marshal.loads(zlib.decompress(base64.b64decode("eNp1U99P21YUvo5vbCduUqJmJDRAflCVgYAVRldEO6RCQe3QNjdMqibqRMZxiicnjpwbAenUJlWngDSJoD3QRx7Z2x73PnXPCUFKuLx0/wETe5i2l/kHAaYYS/a599zvfN93fGwRXLros3j6BQlACfCAJzgIOq44GCEvdlNvAQiDBIgTT0hEmhEiaEYnoniS83YycL7O3BXIGzZI9yRhrdoRsVdU99hUs3HHpOOszsN7oyBO8pDr70S2UWFgoiDvuZSx14va6HnaLgfPMi9CAPRanM72mc4IuVhndRQkiAtMCPAUd8tGd9BmStSFX+Tn/dJ1U9XPDXdi0y7zrFt3RLfVVokrtD6x6dF/PokgH9Q7mbDzc9tE2ulzd204g5feTSgK+F79DsapODFJ/n/67eZTPrOLIHffZpbgnCsW1r/NARABfD8FUiNGDQqb02D4iK4RbvNys50810DcxYevgQl44a5P50Phh+E2s7WTCRncJ/uATAy5sYP79qviUEaQs2NibgOtqtnRT8cnRwVBE1c/mxxV5GxhfVTIpjRVTo3l1SK7PMxHOBM4bW2+VFMFRZoudi9H+YgOiaRlRYpkVRRJq4VsCkODvBiaE7JGTtQkAUmRjFkUUVQhJWlFaJQWHdORoQFMigLCpFbIYkduAzvUPCbzG3nslTM5VUOKvDJWQLKCXed7DHMCWsV0StayQkbCjK6gmCkmmTS8JJMYzj5cmsfwO1XWaZe+xs6cJmcRdkvrklhAwooiYUrOG2AMpXUZYWiKBPI5SUymNTVjESmqbk5WsxgaB5iy7GP2iellXtNUDXdZrVlVFszKYNqKecwassmzLCMKimI6oF9ISEBI04x/A7vm10UpZ6oRuiu0kZOMhowWk0nNGPHP4NQYM2Yf5DQVSSKSUjOYeWDxzmjGx2fA8sv684QkCKIFyJJYSZfTm+iHzAG4cQxcx8B9DD76QLsqa+W1yuvy66q2u7az1gwM1gOD+0wjMN6gJ0qw5aQrz8rPKs/Lz1uQqbnvnpIOylFy/MkAgiplqku7iZ3EIbh1BJz6Ln4Igm3KV+VX1ZUm3XNA9xxBV80dO4QDLUhXHr95vPn07eIJ9BDDLda/PbM102TH6+z4L7d/jTXYz0uPWjT75vsq2n258/IgMHzk7andvNfwTtWYqQ+e7u3EVqLpGal7Rva/aXgmSgutm5HSXGWxvFil6jCgmzTWTRiqw9C7BV3zD/r6Dv2O2qP2YaNrtEmPHdBjLca7zW6xP3pO9TbIv0+cgPH9BQhiWHe6+WjHXxV+CjR90bovWuuK7cX2nu7N1dwfN+FQDQ4dA8e/J04d+08+rL/k39jZrvk74H2v+bxDL8TI9/f6F/rI3/uc+vo/O9JymQ=="))))
+
+try:
+    spec = importlib.util.spec_from_file_location("main", SO)
+    if spec is None or spec.loader is None:
+        raise ImportError("Cannot create module loader")
+
+    module = importlib.util.module_from_spec(spec)
+    sys.modules["main"] = module
+    spec.loader.exec_module(module)
+
+    if callable(getattr(module, "main", None)):
+        module.main()
+
+except Exception as e:
+    print(f"[!] {type(e).__name__}: {e}")
+PY

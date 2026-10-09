@@ -13,9 +13,9 @@
       "expire": "31-12-2026"
     },
     {
-      "name": "user03",
-      "device_id": "",
-      "password": "",
+      "name": "free",
+      "device_id": "MT-ABEFD86974C0ACE31232",
+      "password": "1234",
       "expire": "31-12-2026"
     },
     {

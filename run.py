@@ -1,24 +1,26 @@
+
+cd ~/META-HORIZONE
+
 cat > run.py <<'PY'
 import os
 import sys
 import importlib.util
 
-BASE = os.path.dirname(os.path.realpath(__file__))
-SO = os.path.join(
-    BASE, "main.cpython-314-aarch64-linux-android.so"
+folder = os.path.dirname(os.path.abspath(__file__))
+so_file = os.path.join(
+    folder,
+    "main.cpython-314-aarch64-linux-android.so"
 )
 
-print("[*] Python:", sys.executable)
-print("[*] Module:", SO)
-
-if not os.path.isfile(SO):
-    print("[!] .so file not found")
+if not os.path.isfile(so_file):
+    print("[!] .so file not found:", so_file)
     sys.exit(1)
 
 try:
-    spec = importlib.util.spec_from_file_location("main", SO)
+    spec = importlib.util.spec_from_file_location("main", so_file)
+
     if spec is None or spec.loader is None:
-        raise ImportError("Cannot create module loader")
+        raise ImportError("Cannot load main module")
 
     module = importlib.util.module_from_spec(spec)
     sys.modules["main"] = module

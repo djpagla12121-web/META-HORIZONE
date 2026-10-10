@@ -61,9 +61,9 @@
       "expire": "31-12-2026"
     },
     {
-      "name": "user11",
-      "device_id": "",
-      "password": "",
+      "name": "sgs",
+      "device_id": "MT-2BA7D0FD6D6E185123D5",
+      "password": "1234",
       "expire": "31-12-2026"
     },
     {
